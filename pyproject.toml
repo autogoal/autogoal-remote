@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "autogoal-remote"
+version = "0.1.0"
+description = "Distributed AutoML for AutoGOAL"
+authors = ["Suilan Estevez-Velarde <suilanestevez@gmail.com>", "Alejandro Piad-Morffis <apiad@apiad.net>", "Ernesto L. Estevanell-Valladares <ernestoestevanellv@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "autogoal_remote"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.95.0"
+websockets = "^10.4"
+websocket-client = "^1.5.1"
+dill = "^0.3.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
