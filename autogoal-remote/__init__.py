@@ -6,7 +6,7 @@ a set of functions, or any combination thereof, that work together to solve a sp
 With AutoGOAL you can define a pipeline in many different ways, such that certain parts of it are configurable or
 tunable, and then use search algorithms to find the best way to tune or configure it for a given problem.
 
-This Remote package enable the following functionalities:
+This Package enables the following functionalities:
     - share algorithms from different contribs to other AutoGOAL instances accessible through network.
     - include algorithms shared by other AuutoGOAL instances in the AutoML process.
     - export a trained AutoML pipeline to an isolated, minimal Docker Container, and enable operations on this pipeline as a service.
