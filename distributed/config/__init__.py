@@ -1,6 +1,6 @@
 from inspect import getsourcefile
 from os.path import abspath, dirname, join
-from typing import List, Dict
+from typing import Dict, List
 
 import yaml
 from yamlable import YamlAble, yaml_info

@@ -5,19 +5,21 @@ import uuid
 from typing import Any
 
 import uvicorn
+from .algorithm import (
+    AttrCallRequest,
+    InstantiateRequest,
+    RemoteAlgorithmDTO,
+    decode,
+    dumps,
+    encode,
+    loads,
+)
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 
 from autogoal.contrib import find_classes
-from autogoal.utils import RestrictedWorkerByJoin
-from autogoal.utils import Gb, Hour, Kb, Mb, Min, Sec
+from autogoal.utils import Gb, Hour, Kb, Mb, Min, RestrictedWorkerByJoin, Sec
 from autogoal.utils._dynamic import dynamic_call
-from autogoal.utils.remote._algorithm import (AttrCallRequest,
-                                              InstantiateRequest,
-                                              RemoteAlgorithmDTO, decode,
-                                              dumps, encode, loads)
-
-                                              
 
 app = FastAPI()
 
@@ -29,14 +31,14 @@ algorithms = find_classes()
 algorithm_pool = {}
 
 # sets the RAM usage restriction for remote calls. This will only affect
-# remote attribute calls and is ignored during the instance creation. 
+# remote attribute calls and is ignored during the instance creation.
 # Defaults to 4Gb.
-remote_call_ram_limit = 4*Gb
+remote_call_ram_limit = 4 * Gb
 
 # sets the remote call timeout. This will only affect
-# remote attribute calls and is ignored during the instance creation. 
+# remote attribute calls and is ignored during the instance creation.
 # Defaults to 20 Sec.
-remote_call_timeout = 20*Sec
+remote_call_timeout = 20 * Sec
 
 
 @app.get("/")
@@ -68,7 +70,9 @@ async def post_call(request: AttrCallRequest):
 
     try:
         result = (
-            dynamic_call(inst, request.attr, *loads(request.args), **loads(request.kwargs))
+            dynamic_call(
+                inst, request.attr, *loads(request.args), **loads(request.kwargs)
+            )
             if is_callable
             else attr
         )
@@ -115,12 +119,14 @@ async def delete_algorithm(raw_id):
 
     return {"message": f"deleted instance with id={id}"}
 
+
 # @app.websocket("/ws")
 # async def websocket_endpoint(websocket: WebSocket):
 #     await websocket.accept()
 #     while True:
 #         data = await websocket.receive_text()
 #         await websocket.send_text(f"Message text was: {data}")
+
 
 def run(ip=None, port=None):
     """

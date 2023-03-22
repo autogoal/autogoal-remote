@@ -1,10 +1,9 @@
 import json
 from typing import Any, Dict, List, Set, Tuple, Type
 
+from .algorithm import RemoteAlgorithmBase, RemoteAlgorithmDTO
+from .config import load_config
 from requests.api import get
-
-from autogoal.utils.remote import RemoteAlgorithmBase, RemoteAlgorithmDTO
-from autogoal.utils.remote.config import load_config
 
 
 def get_algorithms(
@@ -27,6 +26,7 @@ def get_algorithms(
         for ralg in raw_algorithms
     ]
     return algorithms
+
 
 # if __name__=="__main__":
 #     alg = get_algorithms(alias="remote-sklearn")[0]

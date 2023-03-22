@@ -1,13 +1,14 @@
 import json
+import pickle
 import re
+import uuid
+from functools import partial
 from typing import Dict
 
 import dill
-import pickle
-import uuid
 from pydantic import BaseModel
-from requests.api import post, delete
-from functools import partial
+from requests.api import delete, post
+
 from autogoal.kb import AlgorithmBase
 from autogoal.utils._dynamic import dynamic_import
 
@@ -112,13 +113,13 @@ class RemoteAlgorithmBase(AlgorithmBase):
                 return instance
         except Exception as error:
             raise Exception(response.reason)
-    
+
     def __enter__(self):
         return self
 
     def __exit__(self, *args, **kwargs):
         return self.__del__()
-        
+
     def __del__(self):
         try:
             delete(
@@ -138,7 +139,7 @@ class RemoteAlgorithmBase(AlgorithmBase):
             return loads(content["result"])
         else:
             # print(json.loads(response.content)["detail"])
-            raise Exception(json.loads(response.content)["detail"]) 
+            raise Exception(json.loads(response.content)["detail"])
 
     def _has_attr(self, attr_name):
         call = AttrCallRequest.build(str(self.id), attr_name, None, None)
