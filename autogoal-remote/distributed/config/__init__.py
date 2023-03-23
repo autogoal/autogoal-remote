@@ -7,7 +7,6 @@ from yamlable import YamlAble, yaml_info
 
 config_dir = dirname(abspath(getsourcefile(lambda: 0)))
 
-
 @yaml_info(yaml_tag_ns="autogoal.remote.connectionAlias")
 class Alias(YamlAble):
     def __init__(self, name, ip, port):
