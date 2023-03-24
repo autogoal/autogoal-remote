@@ -12,7 +12,7 @@ from requests.api import delete, post
 from autogoal.kb import AlgorithmBase
 from autogoal.utils._dynamic import dynamic_import
 
-contrib_pattern = r"autogoal\-(?P<contrib>\w+)\.?.*"
+contrib_pattern = r"autogoal-(?P<contrib>\w+)\."
 
 def dumps(data: object, use_dill=False) -> str:
     data = dill.dumps(data) if use_dill else pickle.dumps(data)

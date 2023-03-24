@@ -1,8 +1,8 @@
 import json
 from typing import Any, Dict, List, Set, Tuple, Type
 
-from .algorithm import RemoteAlgorithmBase, RemoteAlgorithmDTO
-from .config import load_config
+from autogoal_remote.distributed.algorithm import RemoteAlgorithmBase, RemoteAlgorithmDTO
+from autogoal_remote.distributed.config import _load_config
 from requests.api import get
 
 
@@ -13,7 +13,7 @@ def get_algorithms(
     a connection alias with that name is already stored then `ip` and `port` are retrieved from configuration, hence ignoring the arguments values.
     """
     if alias is not None:
-        config = load_config()
+        config = _load_config()
         c_alias = config.connections.get(alias)
         if c_alias is not None:
             ip = c_alias.ip

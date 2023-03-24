@@ -5,7 +5,7 @@ import uuid
 from typing import Any
 
 import uvicorn
-from .algorithm import (
+from autogoal_remote.distributed.algorithm import (
     AttrCallRequest,
     InstantiateRequest,
     RemoteAlgorithmDTO,

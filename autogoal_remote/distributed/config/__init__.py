@@ -7,6 +7,7 @@ from yamlable import YamlAble, yaml_info
 
 config_dir = dirname(abspath(getsourcefile(lambda: 0)))
 
+
 @yaml_info(yaml_tag_ns="autogoal.remote.connectionAlias")
 class Alias(YamlAble):
     def __init__(self, name, ip, port):
@@ -21,7 +22,7 @@ class ConnectionConfig(YamlAble):
         self.connections = connections
 
 
-def load_config() -> ConnectionConfig:
+def _load_config() -> ConnectionConfig:
     path = join(config_dir, "connections.yml")
     result = None
     try:
@@ -35,20 +36,25 @@ def load_config() -> ConnectionConfig:
     return result
 
 
-def save_config(config: ConnectionConfig):
+def _save_config(config: ConnectionConfig):
     path = join(config_dir, "connections.yml")
     with open(path, "w") as fd:
         yaml.dump(config, fd)
 
 
 def store_connection(ip: str, port: int, alias: str):
-    config = load_config()
+    config = _load_config()
     calias = Alias(alias, ip, port)
     config.connections[alias] = calias
-    save_config(config)
+    _save_config(config)
 
 
 def clear_connetions():
-    config = load_config()
+    config = _load_config()
     config.connections = dict()
-    save_config(config)
+    _save_config(config)
+
+
+def get_stored_aliases():
+    config = _load_config()
+    return list(config.connections.values())

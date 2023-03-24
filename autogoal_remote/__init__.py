@@ -14,3 +14,5 @@ This Package enables the following functionalities:
 
 from .distributed import *
 from .production import *
+
+from .distributed import get_algorithms
