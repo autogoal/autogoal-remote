@@ -18,8 +18,8 @@ class Alias(YamlAble):
 
 @yaml_info(yaml_tag_ns="autogoal.remote.connectionConfig")
 class ConnectionConfig(YamlAble):
-    def __init__(self, connections: Dict[str, Alias]):
-        self.connections = connections
+    def __init__(self, connections: Dict[str, Alias] = None):
+        self.connections = connections or dict()
 
 
 def _load_config() -> ConnectionConfig:
@@ -43,7 +43,7 @@ def _save_config(config: ConnectionConfig):
 
 
 def store_connection(ip: str, port: int, alias: str):
-    config = _load_config()
+    config = _load_config() or ConnectionConfig()
     calias = Alias(alias, ip, port)
     config.connections[alias] = calias
     _save_config(config)
@@ -58,3 +58,8 @@ def clear_connetions():
 def get_stored_aliases():
     config = _load_config()
     return list(config.connections.values())
+
+def resolve_alias(alias_name: str):
+    config = _load_config()
+    return config.connections.get(alias_name)
+
