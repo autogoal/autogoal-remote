@@ -1,37 +1,57 @@
 import json
-from typing import Any, Dict, List, Set, Tuple, Type
+from autogoal_remote.distributed.config import resolve_alias
+from autogoal_remote.distributed.utils import send_large_message, receive_large_message
+import websockets
 
-from autogoal_remote.distributed.algorithm import RemoteAlgorithmBase, RemoteAlgorithmDTO
-from autogoal_remote.distributed.config import _load_config
-from requests.api import get
-
-
-def get_algorithms(
-    ip: str = None, port: int = None, alias: str = None
-) -> List[RemoteAlgorithmBase]:
-    """Gets valid algorithms from remote AutoGOAL instances. If `alias` is specified and
-    a connection alias with that name is already stored then `ip` and `port` are retrieved from configuration, hence ignoring the arguments values.
-    """
+def get_address(ip: str = None, port: int = None, alias: str = None):
     if alias is not None:
-        config = _load_config()
-        c_alias = config.connections.get(alias)
+        c_alias = resolve_alias(alias)
         if c_alias is not None:
             ip = c_alias.ip
             port = c_alias.port
+    return ip, port
 
-    response = get(f"http://{ip or '0.0.0.0'}:{port or 8000}/algorithms")
-    raw_algorithms = json.loads(response.content)["algorithms"]
-    algorithms = [
-        RemoteAlgorithmDTO(**ralg).build_algorithm_class(ip, port)
-        for ralg in raw_algorithms
-    ]
-    return algorithms
+def build_route(ip: str = None, port: int = None):
+    return f"ws://{ip or '0.0.0.0'}:{port or 8000}"
 
 
-# if __name__=="__main__":
-#     alg = get_algorithms(alias="remote-sklearn")[0]
-#     inst = alg(n_iter=1, tol=0.005, compute_score=True, threshold_lambda=1, fit_intercept=False )
-#     print(hasattr(inst, "train"))
-#     print(inst)
-#     print(inst.__dict__)
-#     print("end")
+async def get_algorithms(uri: str):
+    async with websockets.connect(uri) as websocket:
+        response = await websocket.recv()
+        return json.loads(response)
+
+
+async def call_algorithm(uri: str, instance_id, attr, args, kwargs):
+    async with websockets.connect(uri) as websocket:
+        request = {
+            "instance_id": instance_id,
+            "attr": attr,
+            "args": args,
+            "kwargs": kwargs,
+        }
+        data = json.dumps(request)
+        await send_large_message(websocket, data, 500)
+        response = await receive_large_message(websocket)
+        response = json.loads(response)
+        
+        # simple error handling
+        error = response.get("error")
+        if error is not None:
+            raise Exception(f"Proxy Error (server-side). {error}")
+
+        return response
+
+async def has_attr(uri: str, instance_id: str, attr: str):
+    async with websockets.connect(uri) as websocket:
+        await websocket.send(json.dumps({"instance_id": instance_id, "attr": attr}))
+        response = await websocket.recv()
+        return json.loads(response)
+
+
+async def instantiate(uri: str, algorithm_dto: dict, args: list, kwargs: dict):
+    async with websockets.connect(uri) as websocket:
+        await websocket.send(
+            json.dumps({"algorithm_dto": algorithm_dto, "args": args, "kwargs": kwargs})
+        )
+        response = await websocket.recv()
+        return json.loads(response)
