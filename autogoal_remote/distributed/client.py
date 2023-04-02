@@ -3,6 +3,7 @@ from autogoal_remote.distributed.config import resolve_alias
 from autogoal_remote.distributed.utils import send_large_message, receive_large_message
 import websockets
 
+
 def get_address(ip: str = None, port: int = None, alias: str = None):
     if alias is not None:
         c_alias = resolve_alias(alias)
@@ -10,6 +11,7 @@ def get_address(ip: str = None, port: int = None, alias: str = None):
             ip = c_alias.ip
             port = c_alias.port
     return ip, port
+
 
 def build_route(ip: str = None, port: int = None):
     return f"ws://{ip or '0.0.0.0'}:{port or 8000}"
@@ -33,13 +35,14 @@ async def call_algorithm(uri: str, instance_id, attr, args, kwargs):
         await send_large_message(websocket, data, 500)
         response = await receive_large_message(websocket)
         response = json.loads(response)
-        
+
         # simple error handling
         error = response.get("error")
         if error is not None:
             raise Exception(f"Proxy Error (server-side). {error}")
 
         return response
+
 
 async def has_attr(uri: str, instance_id: str, attr: str):
     async with websockets.connect(uri) as websocket:
