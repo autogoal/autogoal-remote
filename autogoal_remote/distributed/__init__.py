@@ -24,7 +24,11 @@ def get_algorithms(ip: str = None, port: int = None, alias: str = None):
             for ralg in raw_algorithms
         ]
 
-    return asyncio.run(load())
+    try:
+        result = asyncio.run(load())
+    except:
+        result = []
+    return result
 
 
 if __name__ == "__main__":

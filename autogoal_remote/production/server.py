@@ -4,6 +4,7 @@ from pathlib import Path
 from pydantic import BaseModel
 from autogoal.utils._storage import inspect_storage
 import uvicorn
+from autogoal_remote.distributed.proxy import loads, dumps, encode, decode
 
 
 class Body(BaseModel):
@@ -18,7 +19,10 @@ async def input(request: Request):
     """
     Returns the model input type
     """
-    return {"message": str(request.app.model.best_pipeline_.input_types[0])}
+    return {
+        "semantic type name": str(request.app.model.best_pipeline_.input_types),
+        "pickled data": dumps(request.app.model.best_pipeline_.input_types, use_dill=True),
+        }
 
 
 @app.get("/output")
@@ -27,18 +31,19 @@ async def output(request: Request):
     Returns the model output type
     """
     return {
-        "message": str(
+        "semantic type name": str(
             request.app.model.best_pipeline_.algorithms[-1].__class__.output_type()
-        )
+        ),
+        "pickled data": dumps(request.app.model.best_pipeline_.algorithms[-1].__class__.output_type(), use_dill=True),
     }
 
 
 @app.get("/inspect")
-async def inspect():
+async def inspect(request: Request):
     """
     Returns the model inspect command
     """
-    return {"message": str(inspect_storage(Path(".")))}
+    return {"data": str(inspect_storage(Path(request.app.model.export_path)))}
 
 
 @app.post("/")
@@ -47,16 +52,9 @@ async def eval(t: Body, request: Request):
     Returns the model prediction over the provided values
     """
     model = request.app.model
-
-    input_type = model.best_pipeline_.input_types[0]
-
-    output_type = model.best_pipeline_.algorithms[-1].__class__.output_type()
-
-    data = input_type.from_json(t.values)
-
+    data = loads(t.values)
     result = model.predict(data)
-
-    return Response(content=output_type.to_json(result), media_type="application/json")
+    return {"data": dumps(result)}
 
 
 def run(model, ip=None, port=None):
@@ -65,10 +63,3 @@ def run(model, ip=None, port=None):
     """
     app.model = model
     uvicorn.run(app, host=ip or "0.0.0.0", port=port or 8000)
-
-    # def run(model = None, model_path = None, ip = None, port = None):
-    # '''
-    # Starts HTTP API with specified model and path.
-    # '''
-    # app.model = model or AutoML.folder_load(Path(model_path or '.'))
-    # uvicorn.run(app, host= ip or "0.0.0.0", port= port or 8000)

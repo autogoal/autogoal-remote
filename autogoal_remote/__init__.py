@@ -12,7 +12,8 @@ This Package enables the following functionalities:
     - export a trained AutoML pipeline to an isolated, minimal Docker Container, and enable operations on this pipeline as a service.
 """
 
-from .distributed import *
-from .production import *
+from autogoal_remote.distributed import *
+from autogoal_remote.production import *
 
-from .distributed import get_algorithms
+from autogoal_remote.distributed import get_algorithms
+from autogoal_remote.cli import typer_app

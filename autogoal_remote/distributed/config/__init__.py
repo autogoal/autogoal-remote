@@ -28,11 +28,14 @@ def _load_config() -> ConnectionConfig:
     try:
         with open(path, "r") as fd:
             result = yaml.safe_load(fd)
+            if result is None:
+                raise IOError()
     except IOError as e:
-        config = ConnectionConfig(dict())
+        config = ConnectionConfig()
         with open(path, "w") as fd:
             yaml.dump(config, fd)
             result = config
+            
     return result
 
 

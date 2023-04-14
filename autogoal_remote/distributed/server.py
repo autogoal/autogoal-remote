@@ -26,7 +26,7 @@ import time
 app = FastAPI()
 
 # get references for every algorithm in contribs
-algorithms = find_classes()
+stored_data = find_classes()
 
 # simple set for pooling algorithm instances. If instances
 # are not properly deleted can (and will) fill the memory
@@ -58,9 +58,9 @@ async def get_exposed_algorithms(request: Request):
     """
     Returns exposed algorithms
     """
-    remote_algorithms = [RemoteAlgorithmDTO.from_algorithm_class(a) for a in algorithms]
+    remote_algorithms = [RemoteAlgorithmDTO.from_algorithm_class(a) for a in stored_data]
     return {
-        "message": f"Exposing {str(len(algorithms))} algorithms: {', '.join([a.__name__ for a in algorithms])}",
+        "message": f"Exposing {str(len(stored_data))} algorithms: {', '.join([a.__name__ for a in stored_data])}",
         "algorithms": remote_algorithms,
     }
 
@@ -145,10 +145,10 @@ async def get_exposed_algorithms(websocket: WebSocket):
     """
     await websocket.accept()
     remote_algorithms = [
-        RemoteAlgorithmDTO.from_local_class(a).dict() for a in algorithms
+        RemoteAlgorithmDTO.from_local_class(a).dict() for a in stored_data
     ]
     data = {
-        "message": f"Exposing {str(len(algorithms))} algorithms: {', '.join([a.__name__ for a in algorithms])}",
+        "message": f"Exposing {str(len(stored_data))} algorithms: {', '.join([a.__name__ for a in stored_data])}",
         "algorithms": remote_algorithms,
     }
     await websocket.send_json(data)
