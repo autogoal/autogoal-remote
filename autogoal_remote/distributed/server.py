@@ -58,7 +58,9 @@ async def get_exposed_algorithms(request: Request):
     """
     Returns exposed algorithms
     """
-    remote_algorithms = [RemoteAlgorithmDTO.from_algorithm_class(a) for a in stored_data]
+    remote_algorithms = [
+        RemoteAlgorithmDTO.from_algorithm_class(a) for a in stored_data
+    ]
     return {
         "message": f"Exposing {str(len(stored_data))} algorithms: {', '.join([a.__name__ for a in stored_data])}",
         "algorithms": remote_algorithms,

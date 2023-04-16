@@ -7,9 +7,7 @@ import json
 async def send_large_message(websocket: WebSocket, data: str, chunk_size: int):
     async def send(data):
         func = (
-            websocket.send_text 
-            if hasattr(websocket, "send_text") 
-            else websocket.send
+            websocket.send_text if hasattr(websocket, "send_text") else websocket.send
         )
         return await func(json.dumps(data))
 

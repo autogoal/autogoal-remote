@@ -8,11 +8,14 @@ import subprocess
 app = typer.Typer(name="remote")
 console = Console()
 
+
 @app.callback()
 def remote_main():
-    console.print("""
+    console.print(
+        """
     📶  Connect multiple AutoGOAL instances and share algorithms.
-    """)
+    """
+    )
 
 
 @app.command("connect")

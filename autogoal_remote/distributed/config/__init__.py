@@ -35,7 +35,7 @@ def _load_config() -> ConnectionConfig:
         with open(path, "w") as fd:
             yaml.dump(config, fd)
             result = config
-            
+
     return result
 
 
@@ -62,7 +62,7 @@ def get_stored_aliases():
     config = _load_config()
     return list(config.connections.values())
 
+
 def resolve_alias(alias_name: str):
     config = _load_config()
     return config.connections.get(alias_name)
-

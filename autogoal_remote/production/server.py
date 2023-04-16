@@ -21,8 +21,10 @@ async def input(request: Request):
     """
     return {
         "semantic type name": str(request.app.model.best_pipeline_.input_types),
-        "pickled data": dumps(request.app.model.best_pipeline_.input_types, use_dill=True),
-        }
+        "pickled data": dumps(
+            request.app.model.best_pipeline_.input_types, use_dill=True
+        ),
+    }
 
 
 @app.get("/output")
@@ -34,7 +36,10 @@ async def output(request: Request):
         "semantic type name": str(
             request.app.model.best_pipeline_.algorithms[-1].__class__.output_type()
         ),
-        "pickled data": dumps(request.app.model.best_pipeline_.algorithms[-1].__class__.output_type(), use_dill=True),
+        "pickled data": dumps(
+            request.app.model.best_pipeline_.algorithms[-1].__class__.output_type(),
+            use_dill=True,
+        ),
     }
 
 
